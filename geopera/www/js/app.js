@@ -7,24 +7,26 @@ app.controller('RedditCtrl', function($http, $scope) {
   $scope.stories = [];
 
   function loadStories(params, callback) {
-    $http.get('https://www.reddit.com/r/Android/new/.json', {params: params})
+    
+    $http.get('http://api.geopera.com/jobs?code=PT&query=*', {params: params})
       .success(function(response) {
         var stories = [];
-        angular.forEach(response.data.children, function(child) {
-          var story = child.data;
-          if (!story.thumbnail || story.thumbnail === 'self' || story.thumbnail === 'default') {
-            story.thumbnail = 'https://www.redditstatic.com/icon.png';
+        angular.forEach(response.jobs, function(job) {
+          if (!job.thumbnail || job.thumbnail === 'self' || job.thumbnail === 'default') {
+            job.thumbnail = 'https://www.redditstatic.com/icon.png';
           }
-          stories.push(child.data);
+          job.id = job.link;
+          stories.push(job);
         });
         callback(stories);
       });
   }
 
+  var page = 0;
   $scope.loadOlderStories = function() {
     var params = {};
     if ($scope.stories.length > 0) {
-      params['after'] = $scope.stories[$scope.stories.length - 1].name;
+      params['page'] = page++;
     }
     loadStories(params, function(olderStories) {
       $scope.stories = $scope.stories.concat(olderStories);
@@ -32,13 +34,13 @@ app.controller('RedditCtrl', function($http, $scope) {
     });
   };
   
-  $scope.loadNewerStories = function() {
+  /*$scope.loadNewerStories = function() {
     var params = {'before': $scope.stories[0].name};
     loadStories(params, function(newerStories) {
       $scope.stories = newerStories.concat($scope.stories);
       $scope.$broadcast('scroll.refreshComplete');
     });
-  };
+  };*/
 
   $scope.openLink = function(url) {
     window.open(url, '_blank');
