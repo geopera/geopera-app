@@ -5,17 +5,28 @@ var app = angular.module('myreddit', ['ionic', 'angularMoment']);
 app.controller('RedditCtrl', function($http, $scope) {
 
   $scope.stories = [];
-
+  $scope.searchText = "";
+  $scope.searchCountryCode = "PT";
+  
   function loadStories(params, callback) {
     
-    $http.get('http://api.geopera.com/jobs?code=PT&query=*', {params: params})
+    if (params.query == undefined || params.query == ""){
+      params.query = "*";
+    }
+    
+    if(params.code == undefined || params.code == ""){
+      params.code = $scope.searchCountryCode;
+    }
+    
+    $http.get('http://api.geopera.com/jobs', {params: params})
       .success(function(response) {
         var stories = [];
         angular.forEach(response.jobs, function(job) {
           if (!job.thumbnail || job.thumbnail === 'self' || job.thumbnail === 'default') {
-            job.thumbnail = 'https://www.redditstatic.com/icon.png';
+            job.thumbnail = 'http://a5.mzstatic.com/us/r30/Purple3/v4/fa/fe/fe/fafefe3d-9415-8c9c-2f76-5161d91d6dd1/icon175x175.png';
           }
           job.id = job.link;
+          job.date = new Date(job.insertDate);
           stories.push(job);
         });
         callback(stories);
@@ -44,6 +55,21 @@ app.controller('RedditCtrl', function($http, $scope) {
 
   $scope.openLink = function(url) {
     window.open(url, '_blank');
+  };
+  
+  $scope.doSearch = function() {
+    
+    var params = {};
+    params.query = $scope.searchText;
+    params.code = $scope.searchCountryCode;
+
+    $scope.stories = [];
+      
+    loadStories(params, function(stories) {
+      $scope.stories = $scope.stories.concat(stories);
+      $scope.$broadcast('scroll.infiniteScrollComplete');
+    });
+
   };
 
 });
