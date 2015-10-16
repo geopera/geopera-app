@@ -11,6 +11,8 @@ app.controller('RedditCtrl', function($http, $scope) {
     window.localStorage['config'] = angular.toJson(config);
   } 
 
+
+  $scope.favorites = [{"title" : "maria est belle"}];
   $scope.stories = [];
   $scope.searchText = config.query;
   $scope.searchCountryCode = config.code;
@@ -71,6 +73,23 @@ app.controller('RedditCtrl', function($http, $scope) {
 
   };
 
+});
+
+
+app.config(function($stateProvider, $urlRouterProvider) {
+  
+  $stateProvider.state('jobs', {
+    url: '/jobs',
+    templateUrl: 'templates/jobs.html'
+  });
+  
+  $stateProvider.state('favorites', {
+    url: '/favorites',
+    templateUrl: 'templates/favorites.html'
+  });
+  
+  $urlRouterProvider.otherwise('/jobs');
+  
 });
 
 app.run(function($ionicPlatform) {
