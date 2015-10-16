@@ -3,22 +3,21 @@
 var app = angular.module('myreddit', ['ionic', 'angularMoment']);
 
 app.controller('RedditCtrl', function($http, $scope) {
+  
+  var config = angular.fromJson(window.localStorage['config'] || '{"code" : "PT", "query" : "*", "page": 0}');
+  
+  
+  function persistConfig (){
+    window.localStorage['config'] = angular.toJson(config);
+  } 
 
   $scope.stories = [];
-  $scope.searchText = "";
-  $scope.searchCountryCode = "PT";
+  $scope.searchText = config.query;
+  $scope.searchCountryCode = config.code;
   
-  function loadStories(params, callback) {
+  function loadStories(callback) {
     
-    if (params.query == undefined || params.query == ""){
-      params.query = "*";
-    }
-    
-    if(params.code == undefined || params.code == ""){
-      params.code = $scope.searchCountryCode;
-    }
-    
-    $http.get('http://api.geopera.com/jobs', {params: params})
+    $http.get('http://api.geopera.com/jobs', {params: config})
       .success(function(response) {
         var stories = [];
         angular.forEach(response.jobs, function(job) {
@@ -35,11 +34,10 @@ app.controller('RedditCtrl', function($http, $scope) {
 
   var page = 0;
   $scope.loadOlderStories = function() {
-    var params = {};
     if ($scope.stories.length > 0) {
-      params['page'] = page++;
+      config['page'] = page++;
     }
-    loadStories(params, function(olderStories) {
+    loadStories(function(olderStories) {
       $scope.stories = $scope.stories.concat(olderStories);
       $scope.$broadcast('scroll.infiniteScrollComplete');
     });
@@ -59,13 +57,14 @@ app.controller('RedditCtrl', function($http, $scope) {
   
   $scope.doSearch = function() {
     
-    var params = {};
-    params.query = $scope.searchText;
-    params.code = $scope.searchCountryCode;
+    config.query = $scope.searchText;
+    config.code = $scope.searchCountryCode;
+    
+    persistConfig();
 
     $scope.stories = [];
       
-    loadStories(params, function(stories) {
+    loadStories(function(stories) {
       $scope.stories = $scope.stories.concat(stories);
       $scope.$broadcast('scroll.infiniteScrollComplete');
     });
