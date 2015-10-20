@@ -1,0 +1,20 @@
+<ion-view view-title="Geopera">
+    <ion-content ng-controller="JobsCtrl">
+        <div class="list list-inset">
+            <label class="item item-input">
+                <i class="icon ion-search placeholder-icon"></i>
+                <input type="text" placeholder="Search" ng-model="searchText" ng-click="doSearch()">
+            </label>
+        </div>
+        <ion-list>
+            <ion-item class="item-remove-animate" ng-repeat="story in stories">
+                <h2 ng-click="openLink(story.link)">{{story.title}}</h2>
+                <p>
+                    <span am-time-ago="story.date"></span> - {{story.city}}
+                </p>
+                <a class="button button-icon icon ion-android-favorite-outline" onclick="add()"></a>
+            </ion-item>
+        </ion-list>
+        <ion-infinite-scroll distance="1%" on-infinite="loadOlderStories()"> </ion-infinite-scroll>
+    </ion-content>
+</ion-view>
