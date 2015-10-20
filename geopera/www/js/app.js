@@ -26,11 +26,8 @@
     });
 
 
-
     app.controller('FavoritesCtrl', function ($http, $scope) {
-
         $scope.favorites = favorites;
-
     });
 
 
@@ -47,14 +44,14 @@
             favorites.push(job);
         }
 
-
         $scope.stories = [];
         $scope.searchText = config.query;
         $scope.searchCountryCode = config.code;
 
         function loadStories(callback) {
 
-            $http.get('http://api.geopera.com/jobs', {
+            $http.get('mock/jobs.json', {
+                    //$http.get('http://api.geopera.com/jobs', {
                     params: config
                 })
                 .success(function (response) {

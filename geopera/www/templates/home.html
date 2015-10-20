@@ -12,7 +12,7 @@
                 <p>
                     <span am-time-ago="story.date"></span> - {{story.city}}
                 </p>
-                <a class="button button-icon icon ion-android-favorite-outline" onclick="add()"></a>
+                <a class="button button-icon icon ion-android-favorite-outline" ng-click="addToFavorites(story)"></a>
             </ion-item>
         </ion-list>
         <ion-infinite-scroll distance="1%" on-infinite="loadOlderStories()"> </ion-infinite-scroll>
