@@ -1,8 +1,6 @@
 (function () {
 
-    var app = angular.module('myreddit', ['ionic', 'angularMoment']);
-
-    var favorites = [];
+    var app = angular.module('myreddit', ['ionic', 'angularMoment', 'jobs.favoritesstore']);
 
     app.config(function ($stateProvider, $urlRouterProvider) {
 
@@ -24,29 +22,29 @@
         $urlRouterProvider.otherwise('/home');
 
     });
+    
+    
+    app.controller('FavoritesCtrl', function ($http, $scope, FavoritesStore) {
+          $scope.favorites = FavoritesStore.list();
+          
+            $scope.remove = function(noteId) {
+                FavoritesStore.remove(noteId);
+            };
 
-
-    app.controller('FavoritesCtrl', function ($http, $scope) {
-        $scope.favorites = favorites;
     });
-
-
+    
+    
     app.controller('JobsCtrl', function ($http, $scope) {
 
         var config = angular.fromJson(window.localStorage['config'] || '{"code" : "PT", "query" : "*", "page": 0}');
-        $scope.favorites = favorites;
-
-        function persistConfig() {
-            window.localStorage['config'] = angular.toJson(config);
-        }
-
-        $scope.addToFavorites = function (job) {
-            favorites.push(job);
-        }
 
         $scope.stories = [];
         $scope.searchText = config.query;
         $scope.searchCountryCode = config.code;
+
+        function persistConfig() {
+            window.localStorage['config'] = angular.toJson(config);
+        }
 
         function loadStories(callback) {
 
@@ -80,17 +78,10 @@
         };
 
 
-        /*$scope.loadNewerStories = function() {
-          var params = {'before': $scope.stories[0].name};
-          loadStories(params, function(newerStories) {
-            $scope.stories = newerStories.concat($scope.stories);
-            $scope.$broadcast('scroll.refreshComplete');
-          });
-        };*/
-
         $scope.openLink = function (url) {
             window.open(url, '_blank');
         };
+
 
         $scope.doSearch = function () {
 
