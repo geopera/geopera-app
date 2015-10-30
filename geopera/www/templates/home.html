@@ -7,12 +7,13 @@
             </label>
         </div>
         <ion-list>
-            <ion-item class="item-remove-animate" ng-repeat="story in stories">
+            <ion-item ng-repeat="story in stories">
                 <h2 ng-click="openLink(story.link)">{{story.title}}</h2>
                 <p>
                     <span am-time-ago="story.date"></span> - {{story.city}}
+                    {{story.description}}
                 </p>
-                <a ng-class="{'ion-android-favorite-outline' : isFavorite(story), 'ion-android-favorite' : !isFavorite(story)}" class="button button-icon icon" ng-click="addToFavorites(story)"></a>
+                <a ng-class="getFavoriteIcon(story)" ng-click="addToFavorites(story)"></a>
             </ion-item>
         </ion-list>
         <ion-infinite-scroll distance="1%" on-infinite="loadOlderStories()"> </ion-infinite-scroll>

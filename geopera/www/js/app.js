@@ -34,7 +34,7 @@
     });
     
     
-    app.controller('JobsCtrl', function ($http, $scope) {
+    app.controller('JobsCtrl', function ($http, $scope, FavoritesStore) {
 
         var config = angular.fromJson(window.localStorage['config'] || '{"code" : "PT", "query" : "*", "page": 0}');
 
@@ -67,6 +67,15 @@
         }
 
         var page = 0;
+        
+        $scope.getFavoriteIcon = function(favorite){
+            if(FavoritesStore.get(favorite.id)){
+                return 'ion-android-favorite';
+            }else {
+                return 'ion-android-favorite-outline';
+            }
+        }
+        
         $scope.loadOlderStories = function () {
             if ($scope.stories.length > 0) {
                 config['page'] = page++;
@@ -76,6 +85,16 @@
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
         };
+        
+       $scope.addToFavorites = function (favorite){
+                       if(FavoritesStore.get(favorite.id)){
+           FavoritesStore.remove(favorite.id);
+
+                       } else {
+                                      FavoritesStore.create(favorite);
+
+                       }
+       }
 
 
         $scope.openLink = function (url) {

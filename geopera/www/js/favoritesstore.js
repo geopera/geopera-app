@@ -23,7 +23,12 @@ angular.module('jobs.favoritesstore', [])
 	    },
 
 	    create: function(favorite) {
-	      favorites.push(note);
+	      for (var i = 0; i < favorites.length; i++) {
+	        if (favorites[i].id === favorite.id) {
+	          return; //remove if it existed before
+	        }
+	      }
+		  favorites.push(favorite);
 	      persist();
 	    },
 
