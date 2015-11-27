@@ -1,17 +1,25 @@
-<ion-view view-title="Geopera">
-    <ion-content ng-controller="JobsCtrl">
-        <div class="list list-inset">
-            <label class="item item-input">
-                <i class="icon ion-search placeholder-icon"></i>
-                <input type="text" placeholder="Search" ng-model="searchText" ng-click="doSearch()">
-            </label>
-        </div>
+<ion-view ng-controller="JobsCtrl">
+
+    <ion-nav-buttons side="primary">
+
+        <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input type="text" placeholder="Search" ng-model="params.query">
+        </label>
+        <button class="button button-clear" ng-click="doSearch()">Procurar</button>
+        <span>{{inputtext}}</span>
+
+        <a id="favButton" class="tab-item" href="#/favorites">
+            <i class="icon ion-star"></i>
+        </a>
+
+    </ion-nav-buttons>
+    <ion-content >
         <ion-list>
             <ion-item ng-repeat="story in stories">
                 <h2 ng-click="openLink(story.link)">{{story.title}}</h2>
                 <p>
-                    <span am-time-ago="story.date"></span> - {{story.city}}
-                    {{story.description}}
+                    <span am-time-ago="story.date"></span> - {{story.city}} {{story.description}}
                 </p>
                 <a ng-class="getFavoriteIcon(story)" ng-click="addToFavorites(story)"></a>
             </ion-item>

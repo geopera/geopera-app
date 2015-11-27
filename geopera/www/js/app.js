@@ -22,35 +22,64 @@
         $urlRouterProvider.otherwise('/home');
 
     });
-    
-    
+
+
     app.controller('FavoritesCtrl', function ($http, $scope, FavoritesStore) {
           $scope.favorites = FavoritesStore.list();
-          
+
             $scope.remove = function(noteId) {
                 FavoritesStore.remove(noteId);
             };
 
     });
-    
-    
-    app.controller('JobsCtrl', function ($http, $scope, FavoritesStore) {
 
-        var config = angular.fromJson(window.localStorage['config'] || '{"code" : "PT", "query" : "*", "page": 0}');
+
+    app.factory('configService', function () {
+
+
+      var params = angular.fromJson(window.localStorage['config'] || '{page: 0, country:"PT", query:"*"}');
+
+  	  function persist() {
+  	  	window.localStorage['config'] = angular.toJson(params);
+  	  }
+
+      return {
+          params,
+          saveConfig : function (){
+            persist();
+          }
+      };
+
+    });
+
+    app.controller('JobsCtrl', function ($http, $scope, configService, FavoritesStore) {
 
         $scope.stories = [];
-        $scope.searchText = config.query;
-        $scope.searchCountryCode = config.code;
+        $scope.params = configService.params;
 
-        function persistConfig() {
-            window.localStorage['config'] = angular.toJson(config);
-        }
+        $scope.doSearch = function (text) {
+
+            /*$scope.inputtext = text;  //TODO this should not be needed!!!!! 2way data binding does not look like it is working
+            configService.params.query = text;*/
+
+            $scope.stories = [];
+            loadStories(function (stories) {
+                $scope.stories = $scope.stories.concat(stories);
+
+                if($scope.stories.length > 0){
+                  configService.saveConfig();
+                }
+
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            });
+
+        };
 
         function loadStories(callback) {
 
-            $http.get('mock/jobs.json', {
-                    //$http.get('http://api.geopera.com/jobs', {
-                    params: config
+              //$http.get('mock/jobs.json', {
+                $http.get('http://api.geopera.com/jobs', {
+                    params: configService.params
                 })
                 .success(function (response) {
                     var stories = [];
@@ -67,7 +96,7 @@
         }
 
         var page = 0;
-        
+
         $scope.getFavoriteIcon = function(favorite){
             if(FavoritesStore.get(favorite.id)){
                 return 'ion-android-favorite';
@@ -75,25 +104,20 @@
                 return 'ion-android-favorite-outline';
             }
         }
-        
+
         $scope.loadOlderStories = function () {
             if ($scope.stories.length > 0) {
-                config['page'] = page++;
+                configService.params.page = page++;
             }
             loadStories(function (olderStories) {
                 $scope.stories = $scope.stories.concat(olderStories);
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             });
         };
-        
+
        $scope.addToFavorites = function (favorite){
-                       if(FavoritesStore.get(favorite.id)){
-           FavoritesStore.remove(favorite.id);
-
-                       } else {
-                                      FavoritesStore.create(favorite);
-
-                       }
+           if(FavoritesStore.get(favorite.id)){ FavoritesStore.remove(favorite.id);}
+           else {FavoritesStore.create(favorite);}
        }
 
 
@@ -102,21 +126,6 @@
         };
 
 
-        $scope.doSearch = function () {
-
-            config.query = $scope.searchText;
-            config.code = $scope.searchCountryCode;
-
-            persistConfig();
-
-            $scope.stories = [];
-
-            loadStories(function (stories) {
-                $scope.stories = $scope.stories.concat(stories);
-                $scope.$broadcast('scroll.infiniteScrollComplete');
-            });
-
-        };
 
     });
 
