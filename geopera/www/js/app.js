@@ -36,9 +36,7 @@
 
     app.factory('configService', function () {
 
-
-      var params = angular.fromJson(window.localStorage['config'] || '{page: 0, country:"PT", query:"*"}');
-
+      var params = angular.fromJson(window.localStorage['config'] || {page: 0, code:"PT", query:"*"});
   	  function persist() {
   	  	window.localStorage['config'] = angular.toJson(params);
   	  }

@@ -4,7 +4,7 @@
 
         <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
-            <input type="text" placeholder="Search" ng-model="params.query">
+            <input type="text" placeholder="Search" ng-model="params.query" ng-enter="doSearch()">
         </label>
         <button class="button button-clear" ng-click="doSearch()">Procurar</button>
         <a id="favButton" class="tab-item" href="#/favorites">
