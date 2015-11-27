@@ -59,9 +59,7 @@
 
         $scope.doSearch = function (text) {
 
-            /*$scope.inputtext = text;  //TODO this should not be needed!!!!! 2way data binding does not look like it is working
-            configService.params.query = text;*/
-
+            configService.params.page = 0;
             $scope.stories = [];
             loadStories(function (stories) {
                 $scope.stories = $scope.stories.concat(stories);
